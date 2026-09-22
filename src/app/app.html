@@ -1,0 +1,9 @@
+      <div style="padding: 20px; font-family: sans-serif;">
+  <h1>🎬 Películas Populares (TMDB + Angular)</h1>
+
+  <ul>
+    <li *ngFor="let peli of peliculasPopulares" style="margin-bottom: 8px;">
+      <strong>{{ peli.title }}</strong> — ⭐ {{ peli.vote_average }}
+    </li>
+  </ul>
+</div>
