@@ -6,18 +6,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TmdbService {
-  private apiKey = 'a6a7d14023a3b3901a511add1da22155';
+  private apiKey = 'a6a7d14023a3b3901a511add1da22155'; // 👈 Reemplaza con tu API Key de TMDB
   private baseUrl = 'https://api.themoviedb.org/3';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getPopulares(): Observable<any> {
-    const url = `${this.baseUrl}/movie/popular?api_key=${this.apiKey}&language=es-MX`;
-    return this.http.get(url);
-  }
-
-  buscarPelicula(nombre: string): Observable<any> {
-    const url = `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${nombre}&language=es-MX`;
-    return this.http.get(url);
+  // Método que hace la petición a TMDB
+  getPopularMovies(page: number = 1): Observable<any> {
+    return this.http.get(`${this.baseUrl}/movie/popular?api_key=${this.apiKey}&language=es-MX&page=${page}`);
   }
 }
