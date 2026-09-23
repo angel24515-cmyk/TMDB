@@ -4,17 +4,37 @@
     <p class="text-muted">Las películas más populares del momento</p>
   </header>
 
-  <!-- Spinner mientras carga -->
+  <!-- Buscador -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+      <form (ngSubmit)="buscarPeliculas()" class="input-group">
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Buscar película..." 
+          [(ngModel)]="textoBusqueda" 
+          name="busqueda"
+        >
+        <button class="btn btn-primary" type="submit">🔍 Buscar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Spinner -->
   <div *ngIf="cargando" class="text-center my-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando...</span>
     </div>
   </div>
 
-  <!-- Cuadrícula con las películas -->
+  <!-- Tarjetas de Películas -->
   <div *ngIf="!cargando" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     <div class="col" *ngFor="let pelicula of peliculas">
-      <div class="card h-100 shadow-sm border-0">
+      <div 
+        class="card h-100 shadow-sm border-0" 
+        (click)="verDetalles(pelicula.id)" 
+        style="cursor: pointer;"
+      >
         <img 
           [src]="pelicula.poster_path ? 'https://image.tmdb.org/t/p/w500' + pelicula.poster_path : 'https://via.placeholder.com/500x750?text=Sin+Imagen'" 
           class="card-img-top" 
