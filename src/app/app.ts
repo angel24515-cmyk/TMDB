@@ -6,8 +6,7 @@ import { TmdbService } from './services/tmdb';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  templateUrl: './app.html'
 })
 export class AppComponent implements OnInit {
   peliculasPopulares: any[] = [];
