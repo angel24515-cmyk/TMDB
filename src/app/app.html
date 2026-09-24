@@ -1,9 +1,30 @@
-<div style="padding: 20px; font-family: sans-serif;">
-  <h1>🎬 Películas Populares (TMDB + Angular)</h1>
+<div class="container my-4">
+  <!-- Encabezado con estilos de Bootstrap -->
+  <div class="p-4 mb-4 bg-white rounded-3 shadow-sm border text-center">
+    <h1 class="text-primary fw-bold display-6 mb-0">
+      🎬 Películas Populares <span class="badge bg-secondary fs-6">TMDB</span>
+    </h1>
+  </div>
 
-  <ul>
-    <li *ngFor="let peli of peliculasPopulares" style="margin-bottom: 8px;">
-      <strong>{{ peli.title }}</strong> — ⭐ {{ peli.vote_average }}
-    </li>
-  </ul>
+  <!-- Tarjetas en formato de cuadrícula (Grid Responsive) -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let peli of peliculasPopulares">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body d-flex flex-column justify-content-between p-4">
+          <div>
+            <h5 class="card-title text-dark fw-bold mb-2">{{ peli.title }}</h5>
+            <p class="card-text text-muted mb-3">
+              <span class="badge bg-warning text-dark me-1">⭐ {{ peli.vote_average }}</span>
+              <small>Calificación TMDB</small>
+            </p>
+          </div>
+
+          <!-- Botón que activa el Sweet Modal -->
+          <button class="btn btn-outline-primary btn-sm w-100 mt-3" (click)="verDetalles(peli)">
+            Ver Detalles
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
