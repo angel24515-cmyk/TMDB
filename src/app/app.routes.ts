@@ -4,6 +4,5 @@ import { TopRatedComponent } from './top-rated';
 
 export const routes: Routes = [
   { path: '', component: AppComponent },
-  { path: 'top-rated', component: TopRatedComponent },
-  { path: '**', redirectTo: '' }
+  { path: 'top-rated', component: TopRatedComponent }
 ];

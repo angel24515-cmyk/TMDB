@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgIf, NgFor } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet, RouterModule } from '@angular/router';
 import { TmdbService } from './services/tmdb';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, NgIf, NgFor, FormsModule, RouterOutlet, RouterModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -20,7 +19,10 @@ export class AppComponent implements OnInit {
   peliculasSimilares: any[] = [];
   cargandoSimilares: boolean = false;
 
-  constructor(private tmdbService: TmdbService) {}
+  constructor(
+    private tmdbService: TmdbService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.obtenerPeliculasPopulares();
@@ -30,12 +32,30 @@ export class AppComponent implements OnInit {
     this.cargando = true;
     this.tmdbService.getPopularMovies().subscribe({
       next: (respuesta: any) => {
-        this.peliculas = respuesta.results || [];
+        this.peliculas = respuesta?.results || [];
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error(err);
+        console.error('Error al cargar populares:', err);
         this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  obtenerMejorValoradas(): void {
+    this.cargando = true;
+    this.tmdbService.getTopRatedMovies().subscribe({
+      next: (respuesta: any) => {
+        this.peliculas = respuesta?.results || [];
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error al cargar mejor valoradas:', err);
+        this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -49,30 +69,37 @@ export class AppComponent implements OnInit {
     this.cargando = true;
     this.tmdbService.searchMovies(this.busqueda).subscribe({
       next: (respuesta: any) => {
-        this.peliculas = respuesta.results || [];
+        this.peliculas = respuesta?.results || [];
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error(err);
+        console.error('Error al buscar películas:', err);
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   verSimilares(pelicula: any): void {
+    if (!pelicula || !pelicula.id) return;
+
     this.peliculaSeleccionada = pelicula;
     this.cargandoSimilares = true;
     this.peliculasSimilares = [];
+    this.cdr.detectChanges();
 
     this.tmdbService.getSimilarMovies(pelicula.id).subscribe({
       next: (respuesta: any) => {
-        this.peliculasSimilares = respuesta.results || [];
+        this.peliculasSimilares = respuesta?.results || [];
         this.cargandoSimilares = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error(err);
+        console.error('Error al obtener películas similares:', err);
         this.peliculasSimilares = [];
         this.cargandoSimilares = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -80,5 +107,7 @@ export class AppComponent implements OnInit {
   cerrarModal(): void {
     this.peliculaSeleccionada = null;
     this.peliculasSimilares = [];
+    this.cargandoSimilares = false;
+    this.cdr.detectChanges();
   }
 }
