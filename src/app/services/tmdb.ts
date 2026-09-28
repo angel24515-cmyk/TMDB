@@ -20,4 +20,19 @@ export class TmdbService {
     const url = `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${nombre}&language=es-MX`;
     return this.http.get(url);
   }
+
+  getMovieCredits(movieId: number): Observable<any> {
+    const url = `${this.baseUrl}/movie/${movieId}/credits?api_key=${this.apiKey}&language=es-MX`;
+    return this.http.get(url);
+  }
+
+  getPopularPeople(page: number = 1): Observable<any> {
+    const url = `${this.baseUrl}/person/popular?api_key=${this.apiKey}&language=es-MX&page=${page}`;
+    return this.http.get(url);
+  }
+
+  getPersonDetails(personId: number): Observable<any> {
+    const url = `${this.baseUrl}/person/${personId}?api_key=${this.apiKey}&language=es-MX&append_to_response=combined_credits`;
+    return this.http.get(url);
+  }
 }
