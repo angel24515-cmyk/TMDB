@@ -217,6 +217,19 @@
             </h3>
 
 
+            <!-- GÉNERO AGREGADO -->
+            <p
+              style="
+                font-size: 13px;
+                color: #6f42c1;
+                margin: 0 0 5px 0;
+                font-weight: bold;
+              "
+            >
+              🎭 {{ getNombresGeneros(pelicula.genre_ids) }}
+            </p>
+
+
             <p
               style="
                 font-size: 13px;
@@ -399,6 +412,19 @@
               >
                 {{ similar.title }}
               </h4>
+
+
+              <!-- GÉNERO AGREGADO -->
+              <p
+                style="
+                  font-size: 11px;
+                  color: #6f42c1;
+                  margin: 0 0 4px 0;
+                  font-weight: bold;
+                "
+              >
+                🎭 {{ getNombresGeneros(similar.genre_ids) }}
+              </p>
 
 
               <p
