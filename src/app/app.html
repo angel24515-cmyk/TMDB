@@ -183,18 +183,17 @@
         @for (pelicula of peliculas; track pelicula.id) {
 
           <div
-            (click)="verSimilares(pelicula)"
             style="
               width: 200px;
               border: 1px solid #ddd;
               border-radius: 8px;
               padding: 10px;
               box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-              cursor: pointer;
               background-color: white;
             "
           >
 
+            <!-- FOTO -->
             <img
               [src]="pelicula.poster_path
                 ? 'https://image.tmdb.org/t/p/w500' + pelicula.poster_path
@@ -207,6 +206,7 @@
             />
 
 
+            <!-- TÍTULO -->
             <h3
               style="
                 font-size: 15px;
@@ -217,7 +217,7 @@
             </h3>
 
 
-            <!-- GÉNERO AGREGADO -->
+            <!-- GÉNERO -->
             <p
               style="
                 font-size: 13px;
@@ -230,25 +230,53 @@
             </p>
 
 
+            <!-- CALIFICACIÓN -->
             <p
               style="
                 font-size: 13px;
                 color: #666;
-                margin: 0;
+                margin: 0 0 10px 0;
               "
             >
               ⭐ {{ pelicula.vote_average }}
             </p>
 
 
-            <small
+            <!-- BOTÓN RESEÑAS -->
+            <button
+              (click)="verResenas(pelicula)"
               style="
-                color: #007bff;
+                width: 100%;
+                padding: 8px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+                margin-bottom: 8px;
+              "
+            >
+              📝 Ver reseñas
+            </button>
+
+
+            <!-- BOTÓN SIMILARES -->
+            <button
+              (click)="verSimilares(pelicula)"
+              style="
+                width: 100%;
+                padding: 8px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
                 font-weight: bold;
               "
             >
-              Haz clic para ver similares
-            </small>
+              🎬 Ver similares
+            </button>
 
           </div>
 
@@ -264,7 +292,7 @@
 
 
 <!-- ================================= -->
-<!-- MODAL DE PELÍCULAS SIMILARES -->
+<!-- MODAL -->
 <!-- ================================= -->
 
 @if (peliculaSeleccionada) {
@@ -288,7 +316,7 @@
       style="
         background: white;
         width: 80%;
-        max-width: 800px;
+        max-width: 850px;
         max-height: 85vh;
         overflow-y: auto;
         padding: 25px;
@@ -320,128 +348,261 @@
       </button>
 
 
-      <h2>
-        Películas similares a:
-        "{{ peliculaSeleccionada.title }}"
-      </h2>
+      <!-- ================================= -->
+      <!-- RESEÑAS -->
+      <!-- ================================= -->
+
+      @if (mostrarResenas) {
+
+        <h2>
+          📝 Reseñas de "{{ peliculaSeleccionada.title }}"
+        </h2>
 
 
-      <!-- CARGANDO SIMILARES -->
+        @if (cargandoResenas) {
 
-      @if (cargandoSimilares) {
+          <div style="padding: 30px;">
 
-        <div style="padding: 30px;">
+            <p
+              style="
+                font-size: 16px;
+                color: #555;
+              "
+            >
+              ⏳ Cargando reseñas...
+            </p>
 
-          <p
+          </div>
+
+        }
+
+        @else if (resenas.length === 0) {
+
+          <div
             style="
-              font-size: 16px;
-              color: #555;
+              padding: 30px;
+              color: #666;
             "
           >
-            ⏳ Buscando recomendaciones...
-          </p>
 
-        </div>
+            <p style="font-size: 16px;">
+              ⚠️ No hay reseñas disponibles para esta película.
+            </p>
+
+          </div>
+
+        }
+
+        @else {
+
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 15px;
+              margin-top: 20px;
+              text-align: left;
+            "
+          >
+
+            @for (resena of resenas; track resena.id) {
+
+              <div
+                style="
+                  border: 1px solid #ddd;
+                  border-radius: 10px;
+                  padding: 15px;
+                  background-color: #f8f9fa;
+                "
+              >
+
+                <!-- AUTOR -->
+                <h3
+                  style="
+                    margin: 0 0 5px 0;
+                    color: #333;
+                    font-size: 17px;
+                  "
+                >
+                  👤 {{ resena.author }}
+                </h3>
+
+
+                <!-- FECHA -->
+                <p
+                  style="
+                    margin: 0 0 8px 0;
+                    color: #777;
+                    font-size: 12px;
+                  "
+                >
+                  📅 {{ resena.created_at | date:'dd/MM/yyyy' }}
+                </p>
+
+
+                <!-- CALIFICACIÓN -->
+                @if (resena.author_details?.rating) {
+
+                  <p
+                    style="
+                      margin: 0 0 10px 0;
+                      color: #f0ad00;
+                      font-weight: bold;
+                    "
+                  >
+                    ⭐ {{ resena.author_details.rating }}/10
+                  </p>
+
+                }
+
+
+                <!-- TEXTO -->
+                <p
+                  style="
+                    margin: 0;
+                    line-height: 1.6;
+                    color: #333;
+                    white-space: pre-line;
+                  "
+                >
+                  {{ resena.content }}
+                </p>
+
+              </div>
+
+            }
+
+          </div>
+
+        }
 
       }
-
-
-      <!-- SIN SIMILARES -->
-
-      @else if (peliculasSimilares.length === 0) {
-
-        <div
-          style="
-            padding: 30px;
-            color: #666;
-          "
-        >
-
-          <p style="font-size: 16px;">
-            ⚠️ No se encontraron películas similares disponibles para este título.
-          </p>
-
-        </div>
-
-      }
-
-
-      <!-- SIMILARES -->
 
       @else {
 
-        <div
-          style="
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-          "
-        >
+        <!-- ================================= -->
+        <!-- PELÍCULAS SIMILARES -->
+        <!-- ================================= -->
 
-          @for (similar of peliculasSimilares; track similar.id) {
+        <h2>
+          Películas similares a:
+          "{{ peliculaSeleccionada.title }}"
+        </h2>
 
-            <div
+
+        @if (cargandoSimilares) {
+
+          <div style="padding: 30px;">
+
+            <p
               style="
-                width: 150px;
-                border: 1px solid #eee;
-                padding: 8px;
-                border-radius: 6px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                font-size: 16px;
+                color: #555;
               "
             >
+              ⏳ Buscando recomendaciones...
+            </p>
 
-              <img
-                [src]="similar.poster_path
-                  ? 'https://image.tmdb.org/t/p/w500' + similar.poster_path
-                  : 'https://via.placeholder.com/500x750?text=Sin+Imagen'"
-                [alt]="similar.title"
+          </div>
+
+        }
+
+
+        @else if (peliculasSimilares.length === 0) {
+
+          <div
+            style="
+              padding: 30px;
+              color: #666;
+            "
+          >
+
+            <p style="font-size: 16px;">
+              ⚠️ No se encontraron películas similares disponibles para este título.
+            </p>
+
+          </div>
+
+        }
+
+
+        @else {
+
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 15px;
+              justify-content: center;
+              margin-top: 20px;
+            "
+          >
+
+            @for (similar of peliculasSimilares; track similar.id) {
+
+              <div
                 style="
-                  width: 100%;
-                  border-radius: 4px;
-                "
-              />
-
-
-              <h4
-                style="
-                  font-size: 13px;
-                  margin: 8px 0 4px 0;
+                  width: 150px;
+                  border: 1px solid #eee;
+                  padding: 8px;
+                  border-radius: 6px;
+                  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                 "
               >
-                {{ similar.title }}
-              </h4>
+
+                <img
+                  [src]="similar.poster_path
+                    ? 'https://image.tmdb.org/t/p/w500' + similar.poster_path
+                    : 'https://via.placeholder.com/500x750?text=Sin+Imagen'"
+                  [alt]="similar.title"
+                  style="
+                    width: 100%;
+                    border-radius: 4px;
+                  "
+                />
 
 
-              <!-- GÉNERO AGREGADO -->
-              <p
-                style="
-                  font-size: 11px;
-                  color: #6f42c1;
-                  margin: 0 0 4px 0;
-                  font-weight: bold;
-                "
-              >
-                🎭 {{ getNombresGeneros(similar.genre_ids) }}
-              </p>
+                <h4
+                  style="
+                    font-size: 13px;
+                    margin: 8px 0 4px 0;
+                  "
+                >
+                  {{ similar.title }}
+                </h4>
 
 
-              <p
-                style="
-                  font-size: 12px;
-                  color: #666;
-                  margin: 0;
-                "
-              >
-                ⭐ {{ similar.vote_average }}
-              </p>
+                <!-- GÉNERO -->
+                <p
+                  style="
+                    font-size: 11px;
+                    color: #6f42c1;
+                    margin: 0 0 4px 0;
+                    font-weight: bold;
+                  "
+                >
+                  🎭 {{ getNombresGeneros(similar.genre_ids) }}
+                </p>
 
-            </div>
 
-          }
+                <!-- CALIFICACIÓN -->
+                <p
+                  style="
+                    font-size: 12px;
+                    color: #666;
+                    margin: 0;
+                  "
+                >
+                  ⭐ {{ similar.vote_average }}
+                </p>
 
-        </div>
+              </div>
+
+            }
+
+          </div>
+
+        }
 
       }
 

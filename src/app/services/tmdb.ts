@@ -84,4 +84,17 @@ export class TmdbService {
 
   }
 
+
+  // 7. Reseñas en todos los idiomas
+  getMovieReviews(
+    movieId: number,
+    page: number = 1
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/movie/${movieId}/reviews?api_key=${this.apiKey}&page=${page}`
+    );
+
+  }
+
 }
