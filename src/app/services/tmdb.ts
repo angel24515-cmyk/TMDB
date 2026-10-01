@@ -6,33 +6,82 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TmdbService {
+
   private apiKey = 'a6a7d14023a3b3901a511add1da22155';
+
   private baseUrl = 'https://api.themoviedb.org/3';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getPopulares(): Observable<any> {
-    const url = `${this.baseUrl}/movie/popular?api_key=${this.apiKey}&language=es-MX`;
-    return this.http.get(url);
+
+  // 1. Películas Populares
+  getPopularMovies(page: number = 1): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}&language=es-MX&page=${page}`
+    );
+
   }
 
-  buscarPelicula(nombre: string): Observable<any> {
-    const url = `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${nombre}&language=es-MX`;
-    return this.http.get(url);
+
+  // 2. Buscador de Películas
+  searchMovies(
+    query: string,
+    page: number = 1
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/search/movie?api_key=${this.apiKey}&language=es-MX&query=${encodeURIComponent(query)}&page=${page}`
+    );
+
   }
 
-  getMovieCredits(movieId: number): Observable<any> {
-    const url = `${this.baseUrl}/movie/${movieId}/credits?api_key=${this.apiKey}&language=es-MX`;
-    return this.http.get(url);
+
+  // 3. Películas Mejor Valoradas
+  getTopRatedMovies(
+    page: number = 1
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/movie/top_rated?api_key=${this.apiKey}&language=es-MX&page=${page}`
+    );
+
   }
 
-  getPopularPeople(page: number = 1): Observable<any> {
-    const url = `${this.baseUrl}/person/popular?api_key=${this.apiKey}&language=es-MX&page=${page}`;
-    return this.http.get(url);
+
+  // 4. Películas Similares
+  getSimilarMovies(
+    movieId: number,
+    page: number = 1
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/movie/${movieId}/similar?api_key=${this.apiKey}&language=es-MX&page=${page}`
+    );
+
   }
 
-  getPersonDetails(personId: number): Observable<any> {
-    const url = `${this.baseUrl}/person/${personId}?api_key=${this.apiKey}&language=es-MX&append_to_response=combined_credits`;
-    return this.http.get(url);
+
+  // 5. Lista de Géneros
+  getGenres(): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/genre/movie/list?api_key=${this.apiKey}&language=es-MX`
+    );
+
   }
+
+
+  // 6. Películas por Género
+  getMoviesByGenre(
+    genreId: number,
+    page: number = 1
+  ): Observable<any> {
+
+    return this.http.get(
+      `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&language=es-MX&with_genres=${genreId}&page=${page}`
+    );
+
+  }
+
 }
