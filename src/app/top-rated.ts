@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { TmdbService } from './services/tmdb';
 
@@ -77,7 +77,10 @@ export class TopRatedComponent implements OnInit {
   peliculasSimilares: any[] = [];
   cargandoSimilares: boolean = false;
 
-  constructor(private tmdbService: TmdbService) {}
+  constructor(
+    private tmdbService: TmdbService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.obtenerMejorValoradas();
@@ -89,10 +92,12 @@ export class TopRatedComponent implements OnInit {
       next: (respuesta: any) => {
         this.peliculas = respuesta.results || [];
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error(err);
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -101,16 +106,20 @@ export class TopRatedComponent implements OnInit {
     this.peliculaSeleccionada = pelicula;
     this.cargandoSimilares = true;
     this.peliculasSimilares = [];
+    this.cdr.detectChanges();
 
-    this.tmdbService.getSimilarMovies(pelicula.id).subscribe({
+    // Método corregido a getSimilares
+    this.tmdbService.getSimilares(pelicula.id).subscribe({
       next: (respuesta: any) => {
         this.peliculasSimilares = respuesta.results || [];
         this.cargandoSimilares = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error(err);
         this.peliculasSimilares = [];
         this.cargandoSimilares = false;
+        this.cdr.detectChanges();
       }
     });
   }
