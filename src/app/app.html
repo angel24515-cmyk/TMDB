@@ -7,13 +7,12 @@
 
 
   <!-- BOTONES PRINCIPALES -->
-  <div style="margin-bottom: 20px;">
+  <div style="margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
 
     <button
       (click)="obtenerPeliculasPopulares()"
       style="
         padding: 8px 16px;
-        margin-right: 10px;
         background-color: #007bff;
         color: white;
         border: none;
@@ -39,6 +38,38 @@
       "
     >
       ⭐ Mejor Valoradas
+    </button>
+
+
+    <button
+      (click)="obtenerProximosEstrenos()"
+      style="
+        padding: 8px 16px;
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      "
+    >
+      🚀 Próximos Estrenos
+    </button>
+
+
+    <button
+      (click)="obtenerEnCartelera()"
+      style="
+        padding: 8px 16px;
+        background-color: #e83e8c;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      "
+    >
+      🍿 En Cartelera
     </button>
 
   </div>

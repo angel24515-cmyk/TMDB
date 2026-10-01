@@ -22,7 +22,6 @@ export class AppComponent implements OnInit {
  
   generos: any[] = []; 
 
-  // AGREGADO: obtener el nombre del género
   getNombresGeneros(genreIds: number[]): string {
     if (!genreIds || genreIds.length === 0) {
       return 'Sin género';
@@ -82,8 +81,44 @@ export class AppComponent implements OnInit {
       } 
     }); 
   } 
+
+  // 3. Próximos estrenos 
+  obtenerProximosEstrenos(): void { 
+    this.cargando = true; 
  
-  // 3. Obtener géneros 
+    this.tmdbService.getUpcomingMovies().subscribe({ 
+      next: (respuesta: any) => { 
+        this.peliculas = respuesta?.results || []; 
+        this.cargando = false; 
+        this.cdr.detectChanges(); 
+      }, 
+      error: (err: any) => { 
+        console.error('Error al cargar próximos estrenos:', err); 
+        this.cargando = false; 
+        this.cdr.detectChanges(); 
+      } 
+    }); 
+  }
+
+  // 4. En cartelera 
+  obtenerEnCartelera(): void { 
+    this.cargando = true; 
+ 
+    this.tmdbService.getNowPlayingMovies().subscribe({ 
+      next: (respuesta: any) => { 
+        this.peliculas = respuesta?.results || []; 
+        this.cargando = false; 
+        this.cdr.detectChanges(); 
+      }, 
+      error: (err: any) => { 
+        console.error('Error al cargar películas en cartelera:', err); 
+        this.cargando = false; 
+        this.cdr.detectChanges(); 
+      } 
+    }); 
+  } 
+ 
+  // 5. Obtener géneros 
   obtenerGeneros(): void { 
     this.tmdbService.getGenres().subscribe({ 
       next: (respuesta: any) => { 
@@ -96,7 +131,7 @@ export class AppComponent implements OnInit {
     }); 
   } 
  
-  // 4. Buscar películas 
+  // 6. Buscar películas 
   buscarPeliculas(): void { 
  
     if (!this.busqueda.trim()) { 
@@ -120,7 +155,7 @@ export class AppComponent implements OnInit {
     }); 
   } 
  
-  // 5. Películas por género 
+  // 7. Películas por género 
   obtenerPeliculasPorGenero(genero: any): void { 
  
     this.cargando = true; 
@@ -139,7 +174,7 @@ export class AppComponent implements OnInit {
     }); 
   } 
  
-  // 6. Películas similares 
+  // 8. Películas similares 
   verSimilares(pelicula: any): void { 
  
     this.peliculaSeleccionada = pelicula; 
@@ -159,7 +194,7 @@ export class AppComponent implements OnInit {
     }); 
   } 
  
-  // 7. Cerrar modal 
+  // 9. Cerrar modal 
   cerrarModal(): void { 
     this.peliculaSeleccionada = null; 
     this.peliculasSimilares = []; 
