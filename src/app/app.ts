@@ -1,89 +1,152 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgIf, NgFor } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 👈 Importante para el buscador
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TmdbService } from './services/tmdb';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, NgIf, NgFor, FormsModule], // 👈 Agregado FormsModule
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class AppComponent implements OnInit {
+
   peliculas: any[] = [];
   cargando: boolean = true;
-  textoBusqueda: string = ''; // Variable para almacenar el término buscado
+  busqueda: string = '';
 
-  constructor(private tmdbService: TmdbService) {}
+  peliculaSeleccionada: any = null;
+  peliculasSimilares: any[] = [];
+  cargandoSimilares: boolean = false;
+
+  generos: any[] = [];
+
+  constructor(
+    private tmdbService: TmdbService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.obtenerPeliculasPopulares();
+    this.obtenerGeneros();
   }
 
-  // Método 1
+  // 1. Películas populares
   obtenerPeliculasPopulares(): void {
     this.cargando = true;
+
     this.tmdbService.getPopularMovies().subscribe({
       next: (respuesta: any) => {
-        this.peliculas = respuesta.results;
+        this.peliculas = respuesta?.results || [];
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error('Error al obtener películas:', err);
+        console.error('Error al cargar populares:', err);
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // Método 2
-  verDetalles(peliculaId: number): void {
-    Swal.fire({
-      title: 'Cargando información...',
-      didOpen: () => { Swal.showLoading(); }
-    });
+  // 2. Películas mejor valoradas
+  obtenerMejorValoradas(): void {
+    this.cargando = true;
 
-    this.tmdbService.getMovieDetails(peliculaId).subscribe({
-      next: (detalle: any) => {
-        Swal.fire({
-          title: detalle.title,
-          text: detalle.overview || 'Sin sinopsis disponible.',
-          imageUrl: detalle.poster_path ? `https://image.tmdb.org/t/p/w500${detalle.poster_path}` : '',
-          imageWidth: 200,
-          imageAlt: detalle.title,
-          confirmButtonText: 'Cerrar',
-          confirmButtonColor: '#0d6efd',
-          footer: `<b>Estreno:</b> ${detalle.release_date} | <b>Puntuación:</b> ⭐ ${detalle.vote_average.toFixed(1)}`
-        });
+    this.tmdbService.getTopRatedMovies().subscribe({
+      next: (respuesta: any) => {
+        this.peliculas = respuesta?.results || [];
+        this.cargando = false;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudieron cargar los detalles.'
-        });
+      error: (err: any) => {
+        console.error('Error al cargar mejor valoradas:', err);
+        this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // Método 3: Lógica de búsqueda
+  // 3. Obtener géneros
+  obtenerGeneros(): void {
+    this.tmdbService.getGenres().subscribe({
+      next: (respuesta: any) => {
+        this.generos = respuesta?.genres || [];
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error al cargar géneros:', err);
+      }
+    });
+  }
+
+  // 4. Buscar películas
   buscarPeliculas(): void {
-    if (!this.textoBusqueda.trim()) {
+
+    if (!this.busqueda.trim()) {
       this.obtenerPeliculasPopulares();
       return;
     }
 
     this.cargando = true;
-    this.tmdbService.searchMovies(this.textoBusqueda).subscribe({
+
+    this.tmdbService.searchMovies(this.busqueda).subscribe({
       next: (respuesta: any) => {
-        this.peliculas = respuesta.results;
+        this.peliculas = respuesta?.results || [];
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error('Error en la búsqueda:', err);
+        console.error('Error al buscar películas:', err);
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  // 5. Películas por género
+  obtenerPeliculasPorGenero(genero: any): void {
+
+    this.cargando = true;
+
+    this.tmdbService.getMoviesByGenre(genero.id).subscribe({
+      next: (respuesta: any) => {
+        this.peliculas = respuesta?.results || [];
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error al cargar películas por género:', err);
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // 6. Películas similares
+  verSimilares(pelicula: any): void {
+
+    this.peliculaSeleccionada = pelicula;
+    this.cargandoSimilares = true;
+
+    this.tmdbService.getSimilarMovies(pelicula.id).subscribe({
+      next: (respuesta: any) => {
+        this.peliculasSimilares = respuesta?.results || [];
+        this.cargandoSimilares = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error al obtener similares:', err);
+        this.cargandoSimilares = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // 7. Cerrar modal
+  cerrarModal(): void {
+    this.peliculaSeleccionada = null;
+    this.peliculasSimilares = [];
   }
 }

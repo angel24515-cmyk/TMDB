@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-import { Tmdb } from './tmdb';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TmdbService } from './tmdb';
 
-describe('Tmdb', () => {
-  let service: Tmdb;
+describe('TmdbService', () => {
+  let service: TmdbService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Tmdb);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
+    service = TestBed.inject(TmdbService);
   });
 
   it('should be created', () => {
